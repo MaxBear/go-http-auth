@@ -89,8 +89,16 @@ func (a *DigestAuth) RequireAuth(w http.ResponseWriter, r *http.Request) {
 	}
 	nonce := RandomKey()
 	a.clients[nonce] = &digest_client{nc: 0, last_seen: time.Now().UnixNano()}
+
 	w.Header().Set(contentType, a.Headers.V().UnauthContentType)
-	w.Header().Set(a.Headers.V().Authenticate,
+
+	// support form authentication from web browser
+	authenticate := a.Headers.V().Authenticate
+	if r.FormValue("FormAuth") != "" {
+		authenticate = fmt.Sprintf("x-%s", authenticate)
+	}
+
+	w.Header().Set(authenticate,
 		fmt.Sprintf(`Digest realm="%s", nonce="%s", opaque="%s", algorithm="MD5", qop="auth"`,
 			a.Realm, nonce, a.Opaque))
 	w.WriteHeader(a.Headers.V().UnauthCode)
