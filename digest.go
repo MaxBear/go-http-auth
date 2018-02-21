@@ -275,6 +275,7 @@ func NewDigestAuthenticator(realm string, secrets SecretProvider) *DigestAuth {
 		Realm:                realm,
 		Secrets:              secrets,
 		PlainTextSecrets:     false,
+		IgnoreNonceCount:     true,
 		ClientCacheSize:      DefaultClientCacheSize,
 		ClientCacheTolerance: DefaultClientCacheTolerance,
 		clients:              map[string]*digest_client{}}
